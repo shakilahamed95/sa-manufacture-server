@@ -17,6 +17,7 @@ async function run() {
         await client.connect();
         const toolCollection = client.db("manufacture_website").collection("tools")
         const reviewCollection = client.db("manufacture_website").collection("comments")
+        const orderCollection = client.db("manufacture_website").collection("orders")
 
 
         app.get('/tools', async (req, res) => {
@@ -35,6 +36,15 @@ async function run() {
             const laptop = await toolCollection.findOne(query)
             res.send(laptop)
         })
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order)
+            res.send(result)
+        })
+
+   
+
     }
     finally {
 
