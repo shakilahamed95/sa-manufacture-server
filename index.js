@@ -117,6 +117,12 @@ async function run() {
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
         })
+        app.get('/notadmin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isNotAdmin = user.role !== 'admin';
+            res.send({ notadmin: isNotAdmin })
+        })
     }
     finally {
 
