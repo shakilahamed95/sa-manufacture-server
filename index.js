@@ -52,8 +52,8 @@ async function run() {
         app.get('/tools/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
-            const laptop = await toolCollection.findOne(query)
-            res.send(laptop)
+            const tool = await toolCollection.findOne(query)
+            res.send(tool)
         })
 
         app.post('/orders', async (req, res) => {
@@ -155,6 +155,29 @@ async function run() {
         app.post('/tools', async (req, res) => {
             const tool = req.body;
             const result = await toolCollection.insertOne(tool)
+            res.send(result)
+        })
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const user = await userCollection.findOne(query)
+            res.send(user)
+        })
+        app.put('/user/updateprofile/:email', async (req, res) => {
+            const email = req.params.email;
+            const updateduser = req.body
+            const filter = { email: email };
+            const updateDoc = {
+                $set: {
+                    education: updateduser.education,
+                    location: updateduser.location,
+                    phone: updateduser.phone,
+                    linkdin: updateduser.linkdin,
+                    img: updateduser.img
+                }
+            };
+
+            const result = await userCollection.updateOne(filter, updateDoc);
             res.send(result)
         })
 
