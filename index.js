@@ -7,7 +7,12 @@ const port = process.env.PORT || 5000;
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-app.use(cors());
+const corsConfig = {
+    origin: true,
+    Credentials: true
+}
+app.use(cors(corsConfig))
+app.options('*', cors(corsConfig))
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.njevu.mongodb.net/?retryWrites=true&w=majority`;
@@ -137,15 +142,15 @@ async function run() {
             res.send(result)
         })
         app.post('/create-payment-intent', async (req, res) => {
-            const tool = req.body;
-            const price = tool.totalMoney;
+            const service = req.body;
+            const price = service.totalMoney;
             const amount = price * 100;
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
                 currency: 'usd',
                 payment_method_types: ['card']
             });
-            res.send({ clientSecret: paymentIntent.client_secret })
+            res.json({ clientSecret: paymentIntent.client_secret })
         });
         app.post('/review', async (req, res) => {
             const comment = req.body;
