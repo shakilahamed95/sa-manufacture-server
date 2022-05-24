@@ -152,6 +152,11 @@ async function run() {
             const result = await reviewCollection.insertOne(comment)
             res.send(result)
         })
+        app.post('/tools', async (req, res) => {
+            const tool = req.body;
+            const result = await toolCollection.insertOne(tool)
+            res.send(result)
+        })
 
     }
     finally {
