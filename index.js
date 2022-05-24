@@ -141,17 +141,17 @@ async function run() {
             const result = await orderCollection.deleteOne(filter)
             res.send(result)
         })
-        app.post('/create-payment-intent', async (req, res) => {
-            const service = req.body;
-            const price = service.totalMoney;
-            const amount = price * 100;
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: amount,
-                currency: 'usd',
-                payment_method_types: ['card']
-            });
-            res.json({ clientSecret: paymentIntent.client_secret })
-        });
+        // app.post('/create-payment-intent', async (req, res) => {
+        //     const service = req.body;
+        //     const price = service.totalMoney;
+        //     const amount = price * 100;
+        //     const paymentIntent = await stripe.paymentIntents.create({
+        //         amount: amount,
+        //         currency: 'usd',
+        //         payment_method_types: ['card']
+        //     });
+        //     res.json({ clientSecret: paymentIntent.client_secret })
+        // });
         app.post('/review', async (req, res) => {
             const comment = req.body;
             const result = await reviewCollection.insertOne(comment)
