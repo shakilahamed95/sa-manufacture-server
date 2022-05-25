@@ -95,7 +95,7 @@ async function run() {
             const result = await orderCollection.findOne(quary)
             res.send(result)
         })
-        app.put('/user/:email', async (req, res) => {
+        app.put('/user/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
@@ -124,13 +124,13 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/admin/:email', async (req, res) => {
+        app.get('/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email });
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
         })
-        app.get('/notadmin/:email', async (req, res) => {
+        app.get('/notadmin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email });
             const isNotAdmin = user.role !== 'admin';
@@ -153,7 +153,7 @@ async function run() {
             });
             res.json({ clientSecret: paymentIntent.client_secret })
         });
-        app.post('/review', async (req, res) => {
+        app.post('/review', verifyJWT, async (req, res) => {
             const comment = req.body;
             const result = await reviewCollection.insertOne(comment)
             res.send(result)
@@ -186,13 +186,14 @@ async function run() {
             const result = await userCollection.updateOne(filter, updateDoc);
             res.send(result)
         })
-        app.patch('/orders/:id', async (req, res) => {
+        app.patch('/orders/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const payment = req.body;
             const filter = { _id: ObjectId(id) }
             const updateDoc = {
                 $set: {
                     paid: true,
+                    status: 'Pending',
                     transactionId: payment.transactionId,
                 }
             }
@@ -209,6 +210,25 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await toolCollection.deleteOne(query)
+            res.send(result)
+        })
+
+        app.patch('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const updateDoc = {
+                $set: {
+                    status: 'Shiped',
+                }
+            }
+            const order = await orderCollection.updateOne(filter, updateDoc)
+            res.send(updateDoc)
+        })
+
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query)
             res.send(result)
         })
 
