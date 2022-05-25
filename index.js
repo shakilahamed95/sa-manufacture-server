@@ -193,7 +193,7 @@ async function run() {
             const updateDoc = {
                 $set: {
                     paid: true,
-                    transactionId: payment.transactionId
+                    transactionId: payment.transactionId,
                 }
             }
             const result = await paymentCollection.insertOne(payment)
@@ -203,6 +203,12 @@ async function run() {
 
         app.get('/allorders', async (req, res) => {
             const result = await orderCollection.find().toArray()
+            res.send(result)
+        })
+        app.delete('/tools/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await toolCollection.deleteOne(query)
             res.send(result)
         })
 
