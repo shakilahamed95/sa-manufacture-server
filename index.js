@@ -42,6 +42,7 @@ async function run() {
         const reviewCollection = client.db("manufacture_website").collection("comments")
         const orderCollection = client.db("manufacture_website").collection("orders")
         const userCollection = client.db("manufacture_website").collection("users")
+        const paymentCollection = client.db("manufacture_website").collection("payments")
 
 
         app.get('/tools', async (req, res) => {
@@ -141,17 +142,17 @@ async function run() {
             const result = await orderCollection.deleteOne(filter)
             res.send(result)
         })
-        // app.post('/create-payment-intent', async (req, res) => {
-        //     const service = req.body;
-        //     const price = service.totalMoney;
-        //     const amount = price * 100;
-        //     const paymentIntent = await stripe.paymentIntents.create({
-        //         amount: amount,
-        //         currency: 'usd',
-        //         payment_method_types: ['card']
-        //     });
-        //     res.json({ clientSecret: paymentIntent.client_secret })
-        // });
+        app.post('/create-payment-intent', async (req, res) => {
+            const service = req.body;
+            const price = service.totalMoney;
+            const amount = price / 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
+            });
+            res.json({ clientSecret: paymentIntent.client_secret })
+        });
         app.post('/review', async (req, res) => {
             const comment = req.body;
             const result = await reviewCollection.insertOne(comment)
@@ -183,6 +184,25 @@ async function run() {
             };
 
             const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
+        })
+        app.patch('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) }
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const result = await paymentCollection.insertOne(payment)
+            const order = await orderCollection.updateOne(filter, updateDoc)
+            res.send(updateDoc)
+        })
+
+        app.get('/allorders', async (req, res) => {
+            const result = await orderCollection.find().toArray()
             res.send(result)
         })
 
