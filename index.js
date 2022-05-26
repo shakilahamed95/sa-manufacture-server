@@ -203,8 +203,8 @@ async function run() {
         })
 
         app.get('/allorders', async (req, res) => {
-            const result = await orderCollection.find().toArray()
-            res.send(result)
+            const order = await orderCollection.find().toArray()
+            res.send(order)
         })
         app.delete('/tools/:id', async (req, res) => {
             const id = req.params.id;
