@@ -241,7 +241,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Hello ... It is my manufacture website')
+    res.send('Hello,Welcome to my manufacture website')
 })
 
 app.listen(port, () => {
